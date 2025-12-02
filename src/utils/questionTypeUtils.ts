@@ -20,7 +20,7 @@ export const textTypes: { [key: string]: string } = {
   "Authorized Representative": "What's the name of the representative?",
   "Job Title of the authorized representative": "What's the job title of the authorized representative?",
   "Date of signing by Employee": "What's the date of signing by the employee?",
-  "other locations": "What are the other work locations?"
+  "other locations": "What is the additional work location?"
 };
 
 export const numberTypes: { [key: string]: string } = {
@@ -52,7 +52,9 @@ export const radioTypes: { [key: string]: string } = {
   "After the probationary period, either party may terminate the employment by providing [Notice Period] written notice. The Company reserves the right to make a payment in lieu of notice. The Company may summarily dismiss the Employee without notice in cases of gross misconduct.": "Is the termination clause applicable?",
   "The Employee is entitled to overtime pay for authorized overtime work": "Is the employee entitled to overtime work?",
   "Upon termination, unused leave will be paid. For [Unused Holiday Days] unused days, the holiday pay is [Holiday Pay] [USD].": "Would unused holidays would be paid for if employee is termination?",
+  "The Employee may be required to work at [other locations].": "Does the employee need to work at additional locations besides the normal place of work?",
   "The Employee may be required to work at other locations.": "Does the employee need to work at additional locations besides the normal place of work?",
+  "/The Employee may be required to work at [other locations]./": "Does the employee need to work at additional locations besides the normal place of work?",
   "The Employee may also be entitled to Company sick pay": "Is the sick pay policy applicable?",
   "The Employee is entitled to overtime pay at a rate of [Overtime Pay Rate] for authorized overtime work": "Does the employee receive overtime payment?"
 };

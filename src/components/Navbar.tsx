@@ -191,7 +191,7 @@ const Navbar = ({ level, questionnaire, live_generation, calculations }: NavbarP
                     isDarkMode ? "text-teal-300" : "text-blue-600"
                   }`}
                 >
-                  <span>Generated Document</span>
+                  {/* <span>Generated Document</span> */}
                 </span>
               </div>
             )}

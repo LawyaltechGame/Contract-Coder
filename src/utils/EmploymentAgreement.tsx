@@ -40,7 +40,7 @@ export const documentText = `
                  The Employee’s normal place of work is <span className="placeholder-workplace-address">Workplace Address</span>.
               </p>
               <p>
-                 {/The Employee may be required to work at other locations./}
+                 {/The Employee may be required to work at <span className="placeholder-other-locations">[other locations]</span>./}
               </p>
           </div>
           <div>
@@ -206,7 +206,7 @@ const EmploymentAgreement: React.FC = () => {
           .
         </p>
         <p>
-          {"{"}/The Employee may be required to work at other locations./{"}"}
+          {"{"}/The Employee may be required to work at <span className="placeholder-other-locations">[other locations]</span>./{"}"}
         </p>
 
         <h2 className="text-2xl font-bold mt-6">WORKING HOURS</h2>

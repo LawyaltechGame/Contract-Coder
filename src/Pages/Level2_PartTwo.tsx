@@ -28,7 +28,9 @@ const icons: Icon[] = [
 
 // Mapping for small conditions to their corresponding questions
 const smallConditionToQuestionMap: { [key: string]: string } = {
+  "The Employee may be required to work at [other locations].": "Does the employee need to work at additional locations besides the normal place of work?",
   "The Employee may be required to work at other locations.": "Does the employee need to work at additional locations besides the normal place of work?",
+  "/The Employee may be required to work at [other locations]./": "Does the employee need to work at additional locations besides the normal place of work?",
   "The Employee shall not receive additional payment for overtime worked": "Is the employee entitled to overtime pay?",
   "The Employee is entitled to overtime pay for authorized overtime work": "Is the employee entitled to overtime pay?",
 };

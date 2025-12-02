@@ -29,7 +29,7 @@ const processAgreement = (html: string, answers: UserAnswers, isDarkMode: boolea
   // Map small conditions (enclosed in curly brackets) to their corresponding questions
   const smallConditionsMap: { [key: string]: string } = {
     "Does the employee need to work at additional locations besides the normal place of work?":
-      "{/The Employee may be required to work at other locations./}",
+      '{/The Employee may be required to work at <span class="placeholder-other-locations">[other locations]</span>./}',
     "Is the previous service applicable?":
       '{or, if applicable, "on Previous Employment Start Date with previous continuous service taken into account"}',
     "Is the Employee required to perform additional duties as part of their employment?":

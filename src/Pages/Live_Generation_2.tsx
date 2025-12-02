@@ -160,10 +160,15 @@ const Live_Generation_2 = () => {
       );
     }
   
+    // Handle additional locations small condition - hide by default, show only when Yes
     const additionalLocationsAnswer = userAnswers["Does the employee need to work at additional locations besides the normal place of work?"];
-    if (additionalLocationsAnswer === false) {
-      // No change needed as the condition is already hidden by default
-    } else if (additionalLocationsAnswer === true) {
+    const additionalLocationsClause = '{/The Employee may be required to work at <span className="placeholder-other-locations">[other locations]</span>./}';
+    
+    if (additionalLocationsAnswer === true) {
+      // Show the clause and format the locations
+      const conditionContent = additionalLocationsClause.replace(/^\{\//, "").replace(/\/\}$/, "");
+      updatedText = updatedText.replace(additionalLocationsClause, conditionContent);
+      
       const locationsAnswer = userAnswers["What is the additional work location?"] as string;
       let formattedLocations = "";
       if (locationsAnswer) {
@@ -184,6 +189,9 @@ const Live_Generation_2 = () => {
         /\[other locations\]/gi,
         `<span class="${isDarkMode ? "bg-teal-600/70 text-teal-100" : "bg-teal-200/70 text-teal-900"} px-1 rounded">${formattedLocations}</span>`
       );
+    } else {
+      // Remove the clause if answer is false, null, or undefined (hidden by default)
+      updatedText = updatedText.replace(additionalLocationsClause, "");
     }
   
     Object.entries(userAnswers).forEach(([question, answer]) => {

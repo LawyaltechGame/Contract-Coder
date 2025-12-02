@@ -526,16 +526,22 @@ const Questionnaire: React.FC<{}> = () => {
 
       const isRadioQuestion = primaryType === "Radio" && primaryValue === text;
 
+      // Check if this is the additional locations clause in any format
+      const isAdditionalLocationsClause = 
+        text === "{/The Employee may be required to work at [other locations]./}" ||
+        text === "{/The Employee may be required to work at other locations./}" ||
+        text.includes("The Employee may be required to work at [other locations].") ||
+        text.includes("/The Employee may be required to work at [other locations]./") ||
+        text === "The Employee may be required to work at other locations.";
+
       const shouldInclude =
         isRadioQuestion ||
         text === "USA" ||
-        text === "{/The Employee may be required to work at other locations./}" ||
-        text.includes("The Employee may be required to work at [other locations].") ||
+        isAdditionalLocationsClause ||
         (text === "other locations" && isAdditionalLocationsClauseSelected) ||
         (!isFollowUp &&
           text !== "other locations" &&
-          !text.includes("The Employee may be required to work at [other locations].") &&
-          text !== "{/The Employee may be required to work at other locations./}");
+          !isAdditionalLocationsClause);
 
       return shouldInclude;
     });
@@ -561,8 +567,10 @@ const Questionnaire: React.FC<{}> = () => {
     }
 
     const orderedTexts: string[] = [];
-    const smallConditionText = "{/The Employee may be required to work at other locations./}";
+    const smallConditionText = "{/The Employee may be required to work at [other locations]./}";
+    const smallConditionTextOld = "{/The Employee may be required to work at other locations./}";
     const smallConditionTextWithoutBrackets = "The Employee may be required to work at [other locations].";
+    const smallConditionTextWithoutBracketsOld = "The Employee may be required to work at other locations.";
     const followUpText = "other locations";
     const probationClause =
       "The first Probation Period Length of employment will be a probationary period. The Company shall assess the Employee's performance and suitability during this time. Upon successful completion, the Employee will be confirmed in their role.";
@@ -571,8 +579,10 @@ const Questionnaire: React.FC<{}> = () => {
     filteredQuestions.forEach((text) => {
       if (
         text === smallConditionText ||
+        text === smallConditionTextOld ||
         text.includes(smallConditionTextWithoutBrackets) ||
-        text === "The Employee may be required to work at other locations."
+        text.includes(smallConditionTextWithoutBracketsOld) ||
+        text === "/The Employee may be required to work at [other locations]./"
       ) {
         if (!orderedTexts.includes(text)) {
           orderedTexts.push(text);

@@ -293,7 +293,7 @@ const Live_Generation = () => {
   // Map small conditions (enclosed in curly brackets) to their corresponding questions
   const smallConditionsMap: { [key: string]: string } = {
     "Does the employee need to work at additional locations besides the normal place of work?":
-      "{/The Employee may be required to work at other locations./}",
+      '{/The Employee may be required to work at <span className="placeholder-other-locations">[other locations]</span>./}',
     "Is the previous service applicable?":
       '{or, if applicable, "on Previous Employment Start Date with previous continuous service taken into account"}',
     "Is the Employee required to perform additional duties as part of their employment?":
@@ -342,6 +342,20 @@ const Live_Generation = () => {
       return `<p className="mt-5" id="employment-agreement-working-hours">${replacementText}</p>`;
     }
   );
+
+  // Step 2.5: Handle additional locations small condition - hide by default, show only when Yes
+  const additionalLocationsAnswer = userAnswers["Does the employee need to work at additional locations besides the normal place of work?"];
+  const additionalLocationsClause = '{/The Employee may be required to work at <span className="placeholder-other-locations">[other locations]</span>./}';
+  
+  if (additionalLocationsAnswer === true) {
+    // Show the clause when answer is true, removing the curly braces and slashes
+    const conditionContent = additionalLocationsClause.replace(/^\{\//, "").replace(/\/\}$/, "");
+    updatedText = updatedText.replace(additionalLocationsClause, conditionContent);
+  } else {
+    // Remove the clause if answer is false, null, or undefined (hidden by default)
+    updatedText = updatedText.replace(additionalLocationsClause, "");
+  }
+
 
   // Step 3: Handle holiday pay small condition
   const holidayPayCondition = "{Upon termination, unused leave will be paid. For Unused Holiday Days unused days, the holiday pay is Holiday Pay USD.}";
@@ -456,8 +470,9 @@ const Live_Generation = () => {
 
   // Step 5: Handle other small conditions (enclosed in curly brackets) dynamically
   Object.entries(smallConditionsMap).forEach(([question, smallCondition]) => {
-    // Skip sick pay condition to avoid double processing
-    if (smallCondition === "{The Employee may also be entitled to Company sick pay.}") {
+    // Skip sick pay condition and additional locations condition to avoid double processing
+    if (smallCondition === "{The Employee may also be entitled to Company sick pay.}" ||
+        question === "Does the employee need to work at additional locations besides the normal place of work?") {
       return;
     }
     const answer = userAnswers[question];
@@ -532,10 +547,6 @@ const Live_Generation = () => {
   }
 
   // Step 8: Handle additional locations formatting
-  const additionalLocationsAnswer =
-    userAnswers[
-      "Does the employee need to work at additional locations besides the normal place of work?"
-    ];
   if (additionalLocationsAnswer === true) {
     const locationsAnswer = userAnswers[
       "What is the additional work location?"
