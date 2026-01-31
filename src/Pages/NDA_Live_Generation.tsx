@@ -872,6 +872,8 @@ const NDA_Live_Generation = () => {
                 onRetry={handleRetryCompass}
                 onContinue={handleContinueCompass}
                 isDarkMode={isDarkMode}
+                userAnswers={userAnswers}
+                highlightedTexts={highlightedTexts}
               />
             </div>
           )}
@@ -888,6 +890,8 @@ const NDA_Live_Generation = () => {
                 handleContinueCompass();
               }}
               isDarkMode={isDarkMode}
+              userAnswers={userAnswers}
+              highlightedTexts={highlightedTexts}
             />
           )}
           {/* Logic Scale Popup for NDA Big Condition (Challenge 3) */}
@@ -903,6 +907,8 @@ const NDA_Live_Generation = () => {
                 handleContinueCompass();
               }}
               isDarkMode={isDarkMode}
+              userAnswers={userAnswers}
+              highlightedTexts={highlightedTexts}
             />
           )}
         </div>

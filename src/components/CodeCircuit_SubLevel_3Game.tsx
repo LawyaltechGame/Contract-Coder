@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ClausePreview from "./ClausePreview";
 
 // Props for the CodeCircuit component
 interface CodeCircuitProps {
@@ -91,7 +92,7 @@ const CodeCircuit_SubLevel_3Game: React.FC<CodeCircuitProps> = ({
 
       {/* Main Container */}
       <div
-        className={`p-6 rounded-3xl shadow-2xl border max-w-md w-full text-center relative z-10 backdrop-blur-sm transition-all duration-500 ${
+        className={`p-6 pb-12 rounded-3xl shadow-2xl border max-w-md w-full text-center relative z-10 backdrop-blur-sm transition-all duration-500 max-h-[90vh] overflow-y-auto ${
           isDarkMode
             ? "bg-gray-800/70 border-teal-700/50 text-teal-200"
             : "bg-white/70 border-teal-300 text-teal-900"
@@ -255,8 +256,16 @@ const CodeCircuit_SubLevel_3Game: React.FC<CodeCircuitProps> = ({
           </div>
         )}
 
+        {/* Clause Preview Component */}
+        <ClausePreview
+          subLevel={3}
+          userAnswers={userAnswers}
+          isDarkMode={isDarkMode}
+          highlightedTexts={highlightedTexts}
+        />
+
         {/* User Options (CTA Buttons) with enhanced styling */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 mt-6">
           <button
             onClick={onRetry}
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-3 transform hover:scale-105 ${
@@ -290,6 +299,15 @@ const CodeCircuit_SubLevel_3Game: React.FC<CodeCircuitProps> = ({
           </button>
         </div>
 
+        {/* Progress Indicator - Moved here to avoid overlap with ClausePreview */}
+        <div className={`mt-4 px-4 py-2 rounded-full mx-auto max-w-max text-xs font-medium ${
+          isDarkMode 
+            ? "bg-gray-900/80 text-gray-300" 
+            : "bg-gray-200/80 text-gray-700"
+        }`}>
+          {userCorrect}/{totalConditions} complete
+        </div>
+
         {/* Enhanced Level Indicator Badge */}
         <div
           className={`absolute -top-4 -right-4 w-16 h-16 rounded-full flex items-center justify-center ${
@@ -301,11 +319,6 @@ const CodeCircuit_SubLevel_3Game: React.FC<CodeCircuitProps> = ({
           }`}
         >
           Lv.3
-        </div>
-
-        {/* Progress Indicator */}
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gray-900/80 text-xs text-white font-medium">
-          {userCorrect}/{totalConditions} complete
         </div>
       </div>
     </div>

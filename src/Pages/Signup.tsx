@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { auth, db } from "./firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import * as appwriteAuth from "../services/appwriteAuth";
 import Modal from "../components/Modal";
 import Privacy from "../components/Privacy";
 import Terms from "../components/Terms";
@@ -139,46 +137,43 @@ const Signup: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const { email, password } = formData;
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        dob: formData.dob,
-        bar_id: formData.bar_id,
-        state_region: formData.state_region,
-        country: formData.country,
-        contact_no: formData.contact_no,
-        professional_title: formData.professional_title,
-        company: formData.company,
-        role_title: formData.role_title,
-        consent_given: formData.consent_given,
-        createdAt: new Date(),
-      });
-
-      const token = await user.getIdToken();
-      localStorage.setItem("token", token);
+      const { email, password, first_name, last_name } = formData;
+      const fullName = `${first_name} ${last_name}`.trim();
+      
+      // Sign up with Appwrite (this also creates the user profile in the database)
+      await appwriteAuth.signUp(email, password, fullName);
+      
+      // Get the current user
+      const user = await appwriteAuth.getCurrentUser();
+      
+      if (user) {
+        // Update user profile with additional data
+        await appwriteAuth.updateUserProfile(user.$id, {
+          userId: user.$id,
+          email: formData.email,
+          name: fullName,
+          createdAt: new Date().toISOString(),
+          // Note: Appwrite tables have limited columns, so we're storing only essential data
+          // You can add more columns to the users table if needed
+        });
+        
+        localStorage.setItem("userId", user.$id);
+      }
 
       setIsLoading(false);
       setTimeout(() => {
         navigate("/dashboard");
       }, 500);
     } catch (err: any) {
-      if (err.code === "auth/email-already-in-use") {
+      const errorMessage = err.message || "Registration failed. Please try again.";
+      if (errorMessage.includes("already exists") || errorMessage.includes("already in use")) {
         setError("This email is already in use");
-      } else if (err.code === "auth/invalid-email") {
+      } else if (errorMessage.includes("email")) {
         setError("Invalid email address format");
-      } else if (err.code === "auth/weak-password") {
-        setError("Password is too weak. Please use at least 6 characters");
+      } else if (errorMessage.includes("password")) {
+        setError("Password is too weak. Please use at least 8 characters");
       } else {
-        setError(err.message || "Registration failed. Please try again.");
+        setError(errorMessage);
       }
       window.scrollTo(0, 0);
       setIsLoading(false);

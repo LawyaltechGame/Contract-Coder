@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import NDAClausePreview from './NDAClausePreview';
 
 interface NDA_SmallCondition_SubLevel_2GameProps {
   score: number; // 1 if correct, 0 if not
   onRetry: () => void;
   onContinue: () => void;
   isDarkMode: boolean;
+  userAnswers?: { [key: string]: any };
+  highlightedTexts?: string[];
 }
 
 const ShieldIcon = ({ filled, animate }: { filled: boolean; animate: boolean }) => (
@@ -44,6 +47,8 @@ const NDA_SmallCondition_SubLevel_2Game: React.FC<NDA_SmallCondition_SubLevel_2G
   onRetry,
   onContinue,
   isDarkMode,
+  userAnswers = {},
+  highlightedTexts = [],
 }) => {
   const [showProTip, setShowProTip] = useState(false);
   const [animateShield, setAnimateShield] = useState(false);
@@ -66,7 +71,7 @@ const NDA_SmallCondition_SubLevel_2Game: React.FC<NDA_SmallCondition_SubLevel_2G
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className={`p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 bg-gradient-to-br ${isDarkMode ? 'from-gray-900 via-gray-800 to-black' : 'from-emerald-50 via-white to-gray-50'} border border-white/10 backdrop-blur-xl`}
+        className={`p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 bg-gradient-to-br max-h-[90vh] overflow-y-auto ${isDarkMode ? 'from-gray-900 via-gray-800 to-black' : 'from-emerald-50 via-white to-gray-50'} border border-white/10 backdrop-blur-xl`}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
@@ -102,7 +107,16 @@ const NDA_SmallCondition_SubLevel_2Game: React.FC<NDA_SmallCondition_SubLevel_2G
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="flex justify-center space-x-3 mt-4">
+
+        {/* Clause Preview Component */}
+        <NDAClausePreview
+          subLevel={2}
+          userAnswers={userAnswers}
+          isDarkMode={isDarkMode}
+          highlightedTexts={highlightedTexts}
+        />
+
+        <div className="flex justify-center space-x-3 mt-6">
           <motion.button
             onClick={onRetry}
             className={`group px-6 py-3 rounded-xl font-medium flex items-center space-x-2 ${isDarkMode ? 'bg-gray-700/50 hover:bg-gray-600/60 text-white border border-gray-600/30 hover:border-gray-500/50' : 'bg-white/80 hover:bg-white text-gray-800 border border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl'}`}

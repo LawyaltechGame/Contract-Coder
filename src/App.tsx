@@ -14,7 +14,7 @@ import { HighlightedTextProvider } from "./context/HighlightedTextContext";
 import { QuestionTypeProvider } from "./context/QuestionTypeContext";
 import { QuestionEditProvider } from "./context/QuestionEditContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AppwriteAuthProvider, useAppwriteAuth } from "./context/AppwriteAuthContext";
 import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import Dashboard from "./Pages/Dashboard";
@@ -37,7 +37,7 @@ import NDA_Finish from "./Pages/NDA_Finish";
 const App = () => {
   return (
     <UserAnswersProvider>
-      <AuthProvider>
+      <AppwriteAuthProvider>
         <HighlightedTextProvider>
           <QuestionTypeProvider>
             <QuestionEditProvider>
@@ -47,14 +47,14 @@ const App = () => {
             </QuestionEditProvider>
           </QuestionTypeProvider>
         </HighlightedTextProvider>
-      </AuthProvider>
+      </AppwriteAuthProvider>
     </UserAnswersProvider>
     
   );
 };
 
 const AppRoutes = () => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAppwriteAuth();
 
   if (loading) {
     return (

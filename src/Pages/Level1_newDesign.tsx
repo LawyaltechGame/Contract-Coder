@@ -4,13 +4,9 @@ import "@fontsource/pixelify-sans/400.css";
 import { motion } from "framer-motion";
 import correctSound from "../assets/correct.mp3";
 import incorrectSound from "../assets/incorrect.mp3";
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+import * as appwriteAuth from "../services/appwriteAuth";
+import * as appwriteScores from "../services/appwriteScores";
 import { useNavigate } from "react-router-dom";
-
-// Initialize Firestore
-const db = getFirestore();
 
 interface CustomButtonProps {
   children: React.ReactNode;
@@ -42,40 +38,31 @@ const LevelOneDesign = () => {
   const incorrectSoundRef = new Audio(incorrectSound);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    // Check if user is logged in with Appwrite
+    const checkUser = async () => {
+      const currentUser = await appwriteAuth.getCurrentUser();
       setUser(currentUser);
       if (currentUser) {
-        fetchUserData(currentUser.uid);
+        fetchUserData(currentUser.$id);
       }
-    });
-    return () => unsubscribe();
+    };
+    checkUser();
   }, []);
 
   /**
-   * Fetches user data from Firestore
-   * Following the new data structure with levels map format
+   * Fetches user score data from Appwrite
    */
   const fetchUserData = async (userId: string) => {
     try {
-      const userDocRef = doc(db, "users", userId);
-      const userDoc = await getDoc(userDocRef);
+      const userData = await appwriteScores.getUserScores(userId);
       
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        
-        // Check if level1 data exists in the new structure
-        if (userData.levels && userData.levels.level1) {
-          const level1Data = userData.levels.level1;
-          setHighestScore(level1Data.score || 0);
-          setAttempts(level1Data.attempts || 0);
-        } else {
-          // Initialize if it doesn't exist
-          console.log("No level1 data found for this user");
-          setHighestScore(0);
-          setAttempts(0);
-        }
+      if (userData) {
+        setHighestScore(userData.levelOneHighestScore || 0);
+        setAttempts(userData.levelOneAttempts || 0);
       } else {
-        console.log("No user document found");
+        console.log("No user data found");
+        setHighestScore(0);
+        setAttempts(0);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -238,59 +225,27 @@ const LevelOneDesign = () => {
   };
 
   /**
-   * Saves score to Firestore following the new data structure with levels map format
-   * Updates the level1 map with score, attempts, and last_updated timestamp
+   * Saves score to Appwrite database
+   * Updates the user's level1 score, attempts, and highest score
    */
-  const saveScoreToFirestore = async () => {
+  const saveScoreToAppwrite = async () => {
     if (!user) return;
 
     try {
-      const userRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userRef);
-      
-      // Calculate new attempts and check if current score is higher than previous
+      // Calculate new attempts
       const newAttemptCount = attempts + 1;
-      const isNewHighScore = score > highestScore;
-      const newHighestScore = isNewHighScore ? score : highestScore;
       
-      // Create the levels map with level1 data according to the backend plan
-      const levelData = {
-        levels: {
-          level1: {
-            score: newHighestScore,
-            attempts: newAttemptCount,
-            last_updated: Timestamp.now()
-          }
-        }
-      };
-      
-      if (userDoc.exists()) {
-        // If user document exists, update it with the new level data
-        await updateDoc(userRef, levelData);
-      } else {
-        // If user document doesn't exist, create it with user profile and level data
-        await setDoc(userRef, {
-          bar_id: user.uid,
-          email: user.email || "",
-          first_name: "",  // These would be populated during registration
-          last_name: "",   // These would be populated during registration
-          dob: null,       // These would be populated during registration
-          country: "",     // These would be populated during registration
-          company: "",     // These would be populated during registration
-          contact_no: "",  // These would be populated during registration
-          consent_given: false,
-          createdAt: Timestamp.now(),
-          ...levelData
-        });
-      }
+      // Save score to Appwrite
+      await appwriteScores.updateLevelOneScore(user.$id, score, newAttemptCount);
       
       // Update local state
       setAttempts(newAttemptCount);
+      const isNewHighScore = score > highestScore;
       if (isNewHighScore) {
         setHighestScore(score);
       }
       
-      console.log("Score saved successfully to new data structure");
+      console.log("Score saved successfully to Appwrite");
     } catch (error) {
       console.error("Error saving score: ", error);
     }
@@ -306,7 +261,7 @@ const LevelOneDesign = () => {
         setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         setSelected(false);
       } else {
-        await saveScoreToFirestore();
+        await saveScoreToAppwrite();
         setShowPopup(true);
       }
       window.scrollTo({

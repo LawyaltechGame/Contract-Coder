@@ -59,6 +59,8 @@ interface CertificationPopupProps {
   onContinue: () => void;
   onReplay: () => void;
   score: number;
+  userAnswers: { [key: string]: any };
+  highlightedTexts: string[];
 }
 
 const CertificationPopup: React.FC<CertificationPopupProps> = ({
@@ -67,6 +69,8 @@ const CertificationPopup: React.FC<CertificationPopupProps> = ({
   onContinue,
   onReplay,
   score,
+  userAnswers,
+  highlightedTexts,
 }) => {
   if (!isVisible) return null;
 
@@ -77,6 +81,8 @@ const CertificationPopup: React.FC<CertificationPopupProps> = ({
         onRetry={onReplay}
         onContinue={onContinue}
         isDarkMode={isDarkMode}
+        userAnswers={userAnswers}
+        highlightedTexts={highlightedTexts}
       />
     </div>
   );
@@ -124,6 +130,8 @@ interface SmallCondition_SubLevel_2GamePopupProps {
   score: number;
   onContinue: () => void;
   onReplay: () => void;
+  userAnswers: { [key: string]: any };
+  highlightedTexts: string[];
 }
 
 const SmallCondition_SubLevel_2GamePopup: React.FC<SmallCondition_SubLevel_2GamePopupProps> = ({
@@ -132,6 +140,8 @@ const SmallCondition_SubLevel_2GamePopup: React.FC<SmallCondition_SubLevel_2Game
   score,
   onContinue,
   onReplay,
+  userAnswers,
+  highlightedTexts,
 }) => {
   if (!isVisible) return null;
 
@@ -142,6 +152,8 @@ const SmallCondition_SubLevel_2GamePopup: React.FC<SmallCondition_SubLevel_2Game
         onRetry={onReplay}
         onContinue={onContinue}
         isDarkMode={isDarkMode}
+        userAnswers={userAnswers}
+        highlightedTexts={highlightedTexts}
       />
     </div>
   );
@@ -1796,6 +1808,8 @@ const Live_Generation = () => {
               onContinue={handleContinueToDocument}
               onReplay={handleReplay}
               score={calculatedScore}
+              userAnswers={userAnswers}
+              highlightedTexts={highlightedTexts}
             />
           )}
           {selectedPart === "2" && (
@@ -1805,6 +1819,8 @@ const Live_Generation = () => {
               score={calculatedScore}
               onContinue={handleFinishSmallCondition_SubLevel_2Game}
               onReplay={handleReplay}
+              userAnswers={userAnswers}
+              highlightedTexts={highlightedTexts}
             />
           )}
           {selectedPart === "3" && (

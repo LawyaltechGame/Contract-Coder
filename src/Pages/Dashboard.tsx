@@ -13,8 +13,7 @@ import { GiLevelThreeAdvanced } from "react-icons/gi";
 import { LuBrain } from "react-icons/lu";
 import { BsMoonStarsFill, BsSunFill } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
-import { auth } from "./firebase";
-import { signOut } from "firebase/auth";
+import * as appwriteAuth from "../services/appwriteAuth";
 import Header from "./Header";
 import { useScore } from "../context/ScoreContext";
 import { useHighlightedText } from '../context/HighlightedTextContext';
@@ -793,13 +792,16 @@ const Dashboard: React.FC = () => {
       savedDarkMode !== null ? savedDarkMode === "true" : prefersDarkMode;
     setIsDarkMode(initialDarkMode);
 
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    // Check if user is logged in with Appwrite
+    const checkUser = async () => {
+      const user = await appwriteAuth.getCurrentUser();
       if (user) {
-        setUserName(user.displayName || user.email?.split("@")[0] || "User");
+        setUserName(user.name || user.email?.split("@")[0] || "User");
       } else {
         navigate("/login");
       }
-    });
+    };
+    checkUser();
 
     const darkModeMediaQuery = window.matchMedia(
       "(prefers-color-scheme: dark)"
@@ -823,7 +825,6 @@ const Dashboard: React.FC = () => {
     window.addEventListener("resize", handleResize);
 
     return () => {
-      unsubscribe();
       window.removeEventListener("resize", handleResize);
       if (darkModeMediaQuery.removeEventListener) {
         darkModeMediaQuery.removeEventListener(
@@ -846,7 +847,8 @@ const Dashboard: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await appwriteAuth.logout();
+      localStorage.removeItem("userId");
       localStorage.removeItem("token");
       navigate("/login");
     } catch (error) {

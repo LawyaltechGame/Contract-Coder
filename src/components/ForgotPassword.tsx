@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { auth } from "../Pages/firebase"; // Adjust the import path as necessary
-import { sendPasswordResetEmail } from "firebase/auth";
+import * as appwriteAuth from "../services/appwriteAuth";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -33,13 +32,13 @@ const ForgotPassword: React.FC = () => {
         throw new Error("Please enter your email address");
       }
       
-      await sendPasswordResetEmail(auth, email.trim());
+      await appwriteAuth.sendPasswordReset(email.trim());
       
       setSuccess("Password reset email sent! Check your inbox.");
       setEmail("");
       setFormTouched(false);
     } catch (err: any) {
-      // Handle specific Firebase error codes
+      // Handle specific error codes
       if (err.code === 'auth/invalid-email') {
         setError('Invalid email address format');
       } else if (err.code === 'auth/user-not-found') {

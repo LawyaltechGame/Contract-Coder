@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import ClausePreview from './ClausePreview';
 
 const PerformanceStar_SubLevel_1Game = ({ 
   score = 5, 
   onRetry = () => console.log("Retry clicked"), 
   onContinue = () => console.log("Continue clicked"), 
-  isDarkMode = true 
+  isDarkMode = true,
+  userAnswers = {},
+  highlightedTexts = []
 }) => {
   const [animate, setAnimate] = useState(false);
   // const [showTips, setShowTips] = useState(false);
@@ -135,7 +138,7 @@ const PerformanceStar_SubLevel_1Game = ({
       <div className={`absolute inset-0 -m-5 backdrop-blur-lg rounded-3xl ${getBackgroundClass()} opacity-70`}></div>
       
       <div 
-        className={`relative p-8 rounded-2xl shadow-xl max-w-md w-full mx-4 border overflow-hidden ${
+        className={`relative p-8 rounded-2xl shadow-xl max-w-md w-full mx-4 border overflow-y-auto max-h-[90vh] ${
           isDarkMode
             ? "backdrop-blur-xl bg-gray-900/70 border-gray-700"
             : "backdrop-blur-xl bg-white/70 border-gray-200"
@@ -249,6 +252,14 @@ const PerformanceStar_SubLevel_1Game = ({
           </div>
         )}
 
+        {/* Clause Preview Component */}
+        <ClausePreview
+          subLevel={1}
+          userAnswers={userAnswers}
+          isDarkMode={isDarkMode}
+          highlightedTexts={highlightedTexts}
+        />
+
         {/* NEW: Streak Badge (if player has been consistent) */}
         {/* <div className={`flex items-center justify-center mb-6 ${score < 10 ? "" : "hidden"}`}>
           <div className={`px-3 py-1 rounded-full text-xs flex items-center gap-1 ${
@@ -280,7 +291,7 @@ const PerformanceStar_SubLevel_1Game = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex justify-between space-x-4">
+        <div className="flex justify-between space-x-4 mt-6">
           <button
             onClick={onRetry}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 ${

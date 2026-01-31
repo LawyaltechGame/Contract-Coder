@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { auth } from "./firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import * as appwriteAuth from "../services/appwriteAuth";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -41,17 +40,16 @@ const Login: React.FC = () => {
         throw new Error("Please fill in all fields");
       }
       
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email.trim(),
-        password
-      );
+      // Login with Appwrite
+      await appwriteAuth.login(email.trim(), password);
       
-      const user = userCredential.user;
-      const token = await user.getIdToken();
+      // Get current user
+      const user = await appwriteAuth.getCurrentUser();
       
-      // Store token securely
-      localStorage.setItem("token", token);
+      if (user) {
+        // Store user ID for session
+        localStorage.setItem("userId", user.$id);
+      }
       // Store email if remember me is checked
       if (rememberMe) {
         localStorage.setItem("rememberedEmail", email.trim());
@@ -65,15 +63,14 @@ const Login: React.FC = () => {
         navigate("/dashboard", { replace: true });
       }, 500);
     } catch (err: any) {
-      // Handle specific Firebase error codes
-      if (err.code === 'auth/invalid-email') {
-        setError('Invalid email address format');
-      } else if (err.code === 'auth/user-disabled') {
-        setError('This account has been disabled');
-      } else if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+      // Handle Appwrite error messages
+      const errorMessage = err.message || "Login failed. Please try again.";
+      if (errorMessage.includes('Invalid credentials') || errorMessage.includes('user')) {
         setError('Invalid email or password');
+      } else if (errorMessage.includes('email')) {
+        setError('Invalid email address format');
       } else {
-        setError(err.message || "Login failed. Please try again.");
+        setError(errorMessage);
       }
       setIsLoading(false);
     }

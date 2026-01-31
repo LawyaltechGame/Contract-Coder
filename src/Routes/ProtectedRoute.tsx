@@ -1,10 +1,10 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAppwriteAuth } from "../context/AppwriteAuthContext";
 import { ReactNode } from "react";
-import LoadingSpinner from "../components/LoadingSpinner"; // Create this component
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAppwriteAuth();
 
   if (loading) {
     return <LoadingSpinner />;

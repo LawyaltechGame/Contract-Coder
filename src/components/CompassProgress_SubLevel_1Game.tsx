@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import NDAClausePreview from './NDAClausePreview';
 
 interface CompassProgressProps {
   score: number; // Number of correct placeholders (0-20)
   onRetry: () => void;
   onContinue: () => void;
   isDarkMode: boolean;
+  userAnswers?: { [key: string]: any };
+  highlightedTexts?: string[];
 }
 
 const NDACompassProgress_SubLevel_1Game: React.FC<CompassProgressProps> = ({
@@ -14,6 +17,8 @@ const NDACompassProgress_SubLevel_1Game: React.FC<CompassProgressProps> = ({
   onRetry,
   onContinue,
   isDarkMode,
+  userAnswers = {},
+  highlightedTexts = [],
 }) => {
   const totalPlaceholders = 20;
   const [percentage, setPercentage] = useState(0);
@@ -107,6 +112,14 @@ const NDACompassProgress_SubLevel_1Game: React.FC<CompassProgressProps> = ({
           </p>
         </div>
       )}
+
+      {/* Clause Preview Component */}
+      <NDAClausePreview
+        subLevel={1}
+        userAnswers={userAnswers}
+        isDarkMode={isDarkMode}
+        highlightedTexts={highlightedTexts}
+      />
 
       {/* Action Buttons */}
       <div className="flex gap-4 mt-4">

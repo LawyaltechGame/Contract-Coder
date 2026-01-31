@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import NDAClausePreview from './NDAClausePreview';
 
 interface NDA_BigCondition_SubLevel_3GameProps {
   score: number; // 1 if correct, 0 if not
   onRetry: () => void;
   onFinish: () => void;
   isDarkMode: boolean;
+  userAnswers?: { [key: string]: any };
+  highlightedTexts?: string[];
 }
 
 const ScaleIcon = ({ balanced, animate }: { balanced: boolean; animate: boolean }) => (
@@ -25,6 +28,8 @@ const NDA_BigCondition_SubLevel_3Game: React.FC<NDA_BigCondition_SubLevel_3GameP
   onRetry,
   onFinish,
   isDarkMode,
+  userAnswers = {},
+  highlightedTexts = [],
 }) => {
   const [showProTip, setShowProTip] = useState(false);
   const [animateScale, setAnimateScale] = useState(false);
@@ -83,6 +88,15 @@ const NDA_BigCondition_SubLevel_3Game: React.FC<NDA_BigCondition_SubLevel_3GameP
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Clause Preview Component */}
+        <NDAClausePreview
+          subLevel={3}
+          userAnswers={userAnswers}
+          isDarkMode={isDarkMode}
+          highlightedTexts={highlightedTexts}
+        />
+
         <div className="flex justify-center space-x-3 mt-4">
           <motion.button
             onClick={onRetry}
